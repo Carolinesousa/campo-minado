@@ -39,7 +39,7 @@
 
         function abrirPosicao(x, y) {
             campoMinado.Abrir(x, y)
-            document.getElementById('exibir-execucao').innerHTML += `<pre> Abrindo casa: linha(${x + 1}) / coluna(${y + 1}) </pre>`;
+            document.getElementById('exibir-execucao').innerHTML += `<pre> Abrindo casa: linha(${x}) / coluna(${y}) </pre>`;
         }
 
         function adicionarBomba(posicao) {
@@ -47,9 +47,9 @@
             document.getElementById('exibir-execucao').innerHTML += `<pre> Bomba encontrada: linha(${posicao[0] + 1}) / coluna(${posicao[1] + 1}) </pre>`;
         }
 
-        function AcharBomba(pos) {
+        function AcharBomba(posicao) {
             return !!Bombas.find(
-                (bomba) => bomba[0] === pos[0] && bomba[1] === pos[1]
+                (bomba) => bomba[0] === posicao[0] && bomba[1] === posicao[1]
             )
         }
 
@@ -145,7 +145,7 @@
             }
         }
 
-        document.getElementById('exibir-execucao').innerHTML += '----------- Início do jogo -----------';
+        document.getElementById('exibir-execucao').innerHTML += '<pre> -----------    Início do jogo    ----------- </pre>';
         mostrarTabuleiro()
 
         while (campoMinado.JogoStatus() === 0) {
