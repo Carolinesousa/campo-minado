@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <script src="js/campo-minado.js"></script>
+</head>
+
+<body>
+    <div id="exibir-execucao"></div>
+
+    <script>
+        var campoMinado = new CampoMinado();
+        const Bombas = []
+        var tabuleiro = campoMinado.Tabuleiro().split('\r\n')
+
+        function atualizarTabuleiro() {
+            novoTabuleiro = campoMinado.Tabuleiro()
+            tabuleiro = novoTabuleiro.split('\r\n')
+            return novoTabuleiro
+        }
+
+        function traduzirStatus(status) {
+            switch (status) {
+                case 0:
+                    return "Jogo em Aberto"
+                case 1:
+                    return "Vitoria"
+                case 2:
+                    return "Game Over"
+            }
+        }
+
+        function mostrarTabuleiro() {
+            const status = traduzirStatus(campoMinado.JogoStatus())
+            document.getElementById('exibir-execucao').innerHTML += `<pre> ----------- Status:  ${status} ----------- </pre>`;
+            document.getElementById('exibir-execucao').innerHTML += '<pre>' + atualizarTabuleiro() + '</pre>';
+        }
+
+        function abrirPosicao(x, y) {
+            campoMinado.Abrir(x, y)
+            document.getElementById('exibir-execucao').innerHTML += `<pre> Abrindo casa: linha(${x + 1}) / coluna(${y + 1}) </pre>`;
+        }
+
+        function adicionarBomba(posicao) {
+            Bombas.push(posicao)
+            document.getElementById('exibir-execucao').innerHTML += `<pre> Bomba encontrada: linha(${posicao[0] + 1}) / coluna(${posicao[1] + 1}) </pre>`;
+        }
+
+        function AcharBomba(pos) {
+            return !!Bombas.find(
+                (bomba) => bomba[0] === pos[0] && bomba[1] === pos[1]
+            )
+        }
+
+        function VerificaBomba(arr) {
+            var coord = []
+
+            for (i = 0; i < arr.length; i++) {
+                var result = AcharBomba(arr[i])
+                if (result === false) {
+                    coord.push(arr[i])
+                }
+            }
+
+            return coord
+        }
+
+        function VerificaVizinhos(pos, valores, coordenadas) {
+            campoMinado.Tabuleiro()
+            var fechados = []
+
+            for (i = 0; i < valores.length; i++) {
+                if (valores[i] === '-')
+                    fechados.push(coordenadas[i])
+            }
+
+            if (fechados.length === parseInt(pos)) {
+                for (i = 0; i < fechados.length; i++) {
+                    var result = AcharBomba(fechados[i])
+
+                    if (result === false) {
+                        adicionarBomba(fechados[i])
+                    }
+                }
+            }
+            return Bombas
+        }
+
+        function AbrirEntorno(pos, arr) {
+            if (pos === '1') {
+                var casasLivres = VerificaBomba(arr)
+                var num = arr.length - casasLivres.length
+
+                if (num === 1) {
+                    for (i = 0; i < casasLivres.length; i++) {
+                        if (tabuleiro[casasLivres[i][0]][casasLivres[i][1]] === '-') {
+                            abrirPosicao((casasLivres[i][0]) + 1, (casasLivres[i][1] + 1))
+                            mostrarTabuleiro()
+                        }
+                    }
+                }
+            }
+
+            if (pos === '2') {
+                var casasLivres = VerificaBomba(arr)
+                var num = arr.length - casasLivres.length
+
+                if (num === 2) {
+                    for (i = 0; i < casasLivres.length; i++) {
+                        if (tabuleiro[casasLivres[i][0]][casasLivres[i][1]] === '-') {
+                            abrirPosicao((casasLivres[i][0]) + 1, (casasLivres[i][1] + 1))
+                            mostrarTabuleiro()
+                        }
+                    }
+                }
+            }
+
+            if (pos === '3') {
+                var casasLivres = VerificaBomba(arr)
+                var num = arr.length - casasLivres.length
+
+                if (num === 3) {
+                    for (i = 0; i < casasLivres.length; i++) {
+                        if (tabuleiro[casasLivres[i][0]][casasLivres[i][1]] === '-') {
+                            abrirPosicao((casasLivres[i][0]) + 1, (casasLivres[i][1] + 1))
+                            mostrarTabuleiro()
+                        }
+                    }
+                }
+            }
+
+            if (pos === '4') {
+                var casasLivres = VerificaBomba(arr)
+                var num = arr.length - casasLivres.length
+
+                if (num === 4) {
+                    for (i = 0; i < casasLivres.length; i++) {
+                        if (tabuleiro[casasLivres[i][0]][casasLivres[i][1]] === '-') {
+                            abrirPosicao((casasLivres[i][0]) + 1, (casasLivres[i][1] + 1))
+                            mostrarTabuleiro()
+                        }
+                    }
+                }
+            }
+        }
+
+        document.getElementById('exibir-execucao').innerHTML += '----------- Início do jogo -----------';
+        mostrarTabuleiro()
+
+        while (campoMinado.JogoStatus() === 0) {
+            for (x = 0; x < 9; x++) {
+                for (y = 0; y < 9; y++) {
+                    if (y === 8 && x === 0) {
+                        valores = [tabuleiro[x][y - 1], tabuleiro[x + 1][y], tabuleiro[x + 1][y - 1]]
+                        coordenadas = [[x, y - 1], [x + 1, y], [x + 1, y - 1]]
+                        VerificaVizinhos(tabuleiro[x][y], valores, coordenadas)
+                        AbrirEntorno(tabuleiro[x][y], coordenadas)
+                    }
+
+                    if (x === 0 && y != 0 && y != 8) {
+                        valores = [tabuleiro[x][y - 1], tabuleiro[x][y + 1], tabuleiro[x + 1][y], tabuleiro[x + 1][y - 1], tabuleiro[x + 1][y + 1]]
+                        coordenadas = [[x, y - 1], [x, y + 1], [x + 1, y], [x + 1, y - 1], [x + 1, y + 1]]
+                        VerificaVizinhos(tabuleiro[x][y], valores, coordenadas)
+                        AbrirEntorno(tabuleiro[x][y], coordenadas)
+                    }
+
+                    if (x === 8 && y != 8) {
+                        valores = [tabuleiro[x][y + 1], tabuleiro[x - 1][y], tabuleiro[x - 1][y + 1]]
+                        coordenadas = [[x, y + 1], [x - 1, y], [x - 1, y + 1]]
+                        VerificaVizinhos(tabuleiro[x][y], valores, coordenadas)
+                        AbrirEntorno(tabuleiro[x][y], coordenadas)
+                    }
+
+                    if (x === 8 && y === 8) {
+                        valores = [tabuleiro[x][y - 1], tabuleiro[x - 1][y], tabuleiro[x - 1][y - 1]]
+                        coordenadas = [[x, y - 1], [x - 1, y], [x - 1, y - 1]]
+                        VerificaVizinhos(tabuleiro[x][y], valores, coordenadas)
+                        AbrirEntorno(tabuleiro[x][y], coordenadas)
+                    }
+
+                    if (x != 0 && x != 8 && y === 8) {
+                        valores = [tabuleiro[x][y - 1], tabuleiro[x - 1][y], tabuleiro[x + 1][y], tabuleiro[x - 1][y - 1]]
+                        coordenadas = [[x, y - 1], [x - 1, y], [x + 1, y], [x - 1, y - 1], [x + 1, y - 1]]
+                        AbrirEntorno(tabuleiro[x][y], coordenadas)
+                    }
+
+                    if (x != 0 && y != 0 && x != 8 && y != 8) {
+                        coordenadas = [[x + 1, y - 1], [x - 1, y], [x, y - 1], [x, y + 1], [x - 1, y - 1], [x - 1, y + 1], [x + 1, y], [x + 1, y + 1]]
+
+                        valores = [tabuleiro[x + 1][y - 1], tabuleiro[x - 1][y], tabuleiro[x][y - 1], tabuleiro[x][y + 1], tabuleiro[x - 1][y - 1], tabuleiro[x - 1][y + 1], tabuleiro[x + 1][y], tabuleiro[x + 1][y + 1]]
+                        VerificaVizinhos(tabuleiro[x][y], valores, coordenadas)
+                        AbrirEntorno(tabuleiro[x][y], coordenadas)
+                    }
+
+                    if (x != 0 && y === 0 && x != 8) {
+                        coordenadas = [[x - 1, y], [x + 1, y], [x, y + 1], [x - 1, y + 1], [x + 1, y + 1]]
+                        valores = [tabuleiro[x - 1, y], tabuleiro[x + 1, y], tabuleiro[x, y + 1], tabuleiro[x - 1, y + 1], tabuleiro[x + 1, y + 1]]
+                        VerificaVizinhos(tabuleiro[x][y], valores, coordenadas)
+                        AbrirEntorno(tabuleiro[x][y], coordenadas)
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
